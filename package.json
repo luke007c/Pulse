@@ -1,0 +1,18 @@
+{
+  "name": "pulse",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "Core System/index.js",
+  "scripts": {
+    "start": "node Core System/index.js",
+    "saas": "node saas/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ollama": "^0.6.3",
+    "openai": "^6.44.0",
+    "stripe": "^22.2.2"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "pulse",
+  "version": "1.1.0",
+  "description": "Pulse AI System",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Pulse System",
+  "license": "ISC",
+  "dependencies": {
+    "@xenova/transformers": "^2.17.2",
+    "axios": "^1.18.0",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "config": {
+    "pulse": {
+      "mode": "autonomous",
+      "memory": true,
+      "grid": true,
+      "vault": true
+    }
+  }
+}

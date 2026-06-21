@@ -1,0 +1,26 @@
+{
+  "users": {
+    "default": {
+      "memory": [
+        {
+          "text": "Hello",
+          "timestamp": 1781961810023
+        },
+        {
+          "text": "Hello",
+          "timestamp": 1781962477698
+        },
+        {
+          "text": "Hello",
+          "timestamp": 1781963266846
+        },
+        {
+          "text": "Hello my name is Luke Cousins",
+          "timestamp": 1781963707886
+        }
+      ],
+      "preferences": {},
+      "history": []
+    }
+  }
+}
