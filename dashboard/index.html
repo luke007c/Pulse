@@ -2,17 +2,134 @@
 <html>
 <head>
   <title>Pulse SaaS Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      padding: 20px;
+      background: #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button {
+      background: #38bdf8;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+      height: 80vh;
+      overflow: auto;
+    }
+
+    pre {
+      white-space: pre-wrap;
+    }
+
+    input {
+      width: 60%;
+      padding: 10px;
+      margin-right: 10px;
+    }
+
+    .lead {
+      background: #111827;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+  </style>
 </head>
+
 <body>
 
-<h1>Pulse Dashboard</h1>
+<header>
+  <h2>🚀 Pulse Dashboard</h2>
 
-<button onclick="run()">Run Pipeline</button>
-<button onclick="buy()">Upgrade (Stripe)</button>
+  <div>
+    <input id="input" placeholder="Enter prompt..." />
+    <button onclick="runPipeline()">Run</button>
+  </div>
+</header>
 
-<pre id="out"></pre>
+<div class="container">
 
-<script src="app.js"></script>
+  <div class="card">
+    <h3>📊 Pipeline Output</h3>
+    <pre id="output">No data yet</pre>
+  </div>
+
+  <div class="card">
+    <h3>🏢 Leads</h3>
+    <div id="leads"></div>
+  </div>
+
+</div>
+
+<script>
+async function runPipeline() {
+
+  const input = document.getElementById("input").value;
+
+  const res = await fetch("http://localhost:3001/api/run", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ input })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("output").textContent =
+    JSON.stringify(data, null, 2);
+
+  renderLeads(data);
+}
+
+function renderLeads(data) {
+
+  const container = document.getElementById("leads");
+  container.innerHTML = "";
+
+  const leads = data?.data?.content?.research || [];
+
+  leads.forEach(l => {
+
+    const div = document.createElement("div");
+    div.className = "lead";
+
+    div.innerHTML = `
+      <b>${l.name}</b><br/>
+      Score: ${l.score}<br/>
+      Website: ${l.website || "N/A"}
+    `;
+
+    container.appendChild(div);
+  });
+}
+</script>
 
 </body>
 </html>
