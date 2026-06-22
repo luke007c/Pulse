@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pulse Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+
+    .status {
+      padding: 5px 10px;
+      background: #334155;
+      display: inline-block;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    a {
+      color: #38bdf8;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>⚡ Pulse SaaS Dashboard</h1>
+
+<div id="leads">Loading...</div>
+
+<script>
+async function loadLeads() {
+  const res = await fetch("/api/leads");
+  const leads = await res.json();
+
+  const container = document.getElementById("leads");
+
+  if (!Array.isArray(leads)) {
+    container.innerHTML = "No leads found";
+    return;
+  }
+
+  container.innerHTML = leads.map(lead => `
+    <div class="card">
+      <h3>${lead.name || "Unknown"}</h3>
+      <div class="status">${lead.status || "new"}</div>
+      <p>Score: ${lead.salesScore || 0}</p>
+      <p>Email: ${lead.email || "N/A"}</p>
+
+      ${lead.demoUrl ? `
+        <a href="${lead.demoUrl}" target="_blank">
+          View Demo
+        </a>
+      ` : ""}
+    </div>
+  `).join("");
+}
+
+loadLeads();
+</script>
+
+</body>
+</html>

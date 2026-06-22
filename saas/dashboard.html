@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pulse CRM Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0b1220;
+      color: white;
+      padding: 20px;
+    }
+
+    .card {
+      background: #1f2937;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+
+    .row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #38bdf8;
+      color: black;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Pulse CRM Dashboard</h1>
+<div id="leads"></div>
+
+<script>
+async function load() {
+  const res = await fetch('/api/crm');
+  const data = await res.json();
+
+  const container = document.getElementById('leads');
+
+  container.innerHTML = data.leads.map(l => `
+    <div class="card">
+      <h3>${l.name} <span class="tag">${l.status}</span></h3>
+      <p>Score: ${l.score}</p>
+      <p>Email Sent: ${l.emailSent}</p>
+      <p>Clicks: ${l.demoClicks}</p>
+    </div>
+  `).join('');
+}
+
+load();
+setInterval(load, 3000);
+</script>
+
+</body>
+</html>

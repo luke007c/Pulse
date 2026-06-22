@@ -1,76 +1,83 @@
-import "dotenv/config";
 import express from "express";
-import cors from "cors";
+import dotenv from "dotenv";
 
-// --------------------
-// CORE NEXUS
-// --------------------
-import { nexus } from "../Core System/agents/nexus.js";
+// -------------------------
+// AGENTS (IMPORTANT: MUST EXIST)
+// -------------------------
+import { nexus } from "../core-system/agents/nexus.js";
+import { researcher } from "../core-system/agents/researcher/index.js";
+import { builder } from "../core-system/agents/builder/index.js";
+import { sales } from "../core-system/agents/sales/index.js";
 
-// --------------------
-// AGENTS
-// --------------------
-import { researcher } from "../Core System/agents/researcher/index.js";
-import { builder } from "../Core System/agents/builder/index.js";
-import { sales } from "../Core System/agents/sales/index.js";
+// -------------------------
+dotenv.config();
 
 const app = express();
-
-app.use(cors());
 app.use(express.json());
 
-// --------------------
+// -------------------------
 // HEALTH CHECK
-// --------------------
+// -------------------------
 app.get("/", (req, res) => {
-  res.json({ status: "Pulse SaaS running" });
+  res.json({
+    status: "Pulse running",
+    time: new Date().toISOString()
+  });
 });
 
-// --------------------
+// -------------------------
 // MAIN PIPELINE ROUTE
-// --------------------
+// -------------------------
 app.post("/api/run", async (req, res) => {
   try {
+
     const { input } = req.body;
 
     if (!input) {
-      return res.status(400).json({ error: "Missing input" });
+      return res.status(400).json({
+        success: false,
+        error: "Missing input"
+      });
     }
 
-    let streamText = "";
+    // -------------------------
+    // RUN NEXUS PIPELINE
+    // -------------------------
+    const result = await nexus(input, () => {}, {
+      researcher,
+      builder,
+      sales
+    });
 
-    const result = await nexus(
-      input,
-      (token) => {
-        streamText += token;
-      },
-      {
-        researcher,
-        builder,
-        sales
-      }
-    );
+    // -------------------------
+    // 🔥 DEBUG OUTPUT (CRITICAL)
+    // -------------------------
+    console.log("\n=== PIPELINE RESULT START ===");
+    console.dir(result, { depth: null });
+    console.log("=== PIPELINE RESULT END ===\n");
 
-    res.json({
+    // -------------------------
+    // RETURN RESPONSE SAFELY
+    // -------------------------
+    return res.json({
       success: true,
-      streamed: streamText,
-      result
+      result: result || {}
     });
 
   } catch (err) {
-    console.error("PIPELINE ERROR:", err);
-    res.status(500).json({
+
+    console.error("SERVER ERROR:", err);
+
+    return res.status(500).json({
       success: false,
       error: err.message
     });
   }
 });
 
-// --------------------
+// -------------------------
 // START SERVER
-// --------------------
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-  console.log(`🚀 SaaS running on http://localhost:${PORT}`);
+// -------------------------
+app.listen(3001, () => {
+  console.log("🚀 Pulse running on http://localhost:3001");
 });

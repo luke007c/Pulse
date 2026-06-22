@@ -1,5 +1,5 @@
 import express from "express";
-import { runPipeline } from "../../Core System/pipeline.js";
+import { pipeline } from "../../core-system/pipeline.js";
 import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -9,14 +9,31 @@ const router = express.Router();
 // =========================
 router.post("/run", requireAuth, async (req, res) => {
   try {
-    const { input } = req.body;
 
-    const result = await runPipeline(input);
+    const input = req.body?.input;
 
-    res.json(result);
+    if (!input) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing input"
+      });
+    }
+
+    const result = await pipeline(input);
+
+    return res.json({
+      success: true,
+      result
+    });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    console.error("Pipeline Route Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      error: err.message
+    });
   }
 });
 
